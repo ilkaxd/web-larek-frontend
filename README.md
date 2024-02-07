@@ -1,5 +1,7 @@
 # Проектная работа "Веб-ларек"
 
+[Макет](https://www.figma.com/file/50YEgxY8IYDYj7UQu7yChb/Веб-ларёк?type=design&node-id=1-503&mode=design&t=scMpu2kscKdTdD0E-0)
+
 Стек: HTML, SCSS, TS, Webpack
 
 Структура проекта:
