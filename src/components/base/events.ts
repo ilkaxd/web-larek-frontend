@@ -28,7 +28,7 @@ export class EventEmitter implements IEvents {
     /**
      * Установить обработчик на событие
      */
-    on<T extends object>(eventName: EventName, callback: (event: T) => void) {
+    on<T extends object>(eventName: EventName, callback: (event: T) => void): void {
         if (!this._events.has(eventName)) {
             this._events.set(eventName, new Set<Subscriber>());
         }
@@ -50,7 +50,7 @@ export class EventEmitter implements IEvents {
     /**
      * Инициировать событие с данными
      */
-    emit<T extends object>(eventName: string, data?: T) {
+    emit<T extends object>(eventName: string, data?: T): void {
         this._events.forEach((subscribers, name) => {
             if (name instanceof RegExp && name.test(eventName) || name === eventName) {
                 subscribers.forEach(callback => callback(data));
@@ -61,14 +61,14 @@ export class EventEmitter implements IEvents {
     /**
      * Слушать все события
      */
-    onAll(callback: (event: EmitterEvent) => void) {
+    onAll(callback: (event: EmitterEvent) => void): void {
         this.on("*", callback);
     }
 
     /**
      * Сбросить все обработчики
      */
-    offAll() {
+    offAll(): void {
         this._events = new Map<string, Set<Subscriber>>();
     }
 

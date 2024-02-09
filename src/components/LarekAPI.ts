@@ -1,15 +1,14 @@
 import { Api, ApiListResponse } from "./base/api";
-// import { IOrder, IOrderResult, ILot  } from "../types";  
+import { IOrder, IOrderResult, ILot  } from "../types";  
 
 interface ILarekAPI {
   getLotItem: (id: string) => Promise<ILot>;
   getLotList: () => Promise<ILot[]>;
-  postOrderLots: (order: IOrder)
+  postOrderLots: (order: IOrder) => Promise<IOrderResult>;
 }
 
 class LarekAPI extends Api implements ILarekAPI {
     readonly cdn: string;
-
 
     constructor(cdn: string, baseUrl: string, options?: RequestInit) {
         super(baseUrl, options)
@@ -41,3 +40,5 @@ class LarekAPI extends Api implements ILarekAPI {
         );
     }
 }
+
+export { LarekAPI }

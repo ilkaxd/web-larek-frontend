@@ -1,6 +1,10 @@
 import _ from "lodash";
-import { FormErrors, IAppState, ILot, IOrder, LotCategory } from "../types";
+import { FormErrors, IAppState, IBasketItem, ILot, IOrder, LotCategory } from "../types";
 import { Model } from "./base/Model";
+
+export type CatalogChangeEvent = {
+    catalog: LotItem[]
+}
 
 export class LotItem extends Model<ILot> {
     id: string;
@@ -8,13 +12,13 @@ export class LotItem extends Model<ILot> {
     description: string;
     image: string;
     category: LotCategory;
-    datetime: string;
+    isAvailable: boolean;
     price: number;
 }
 
 export class AppState extends Model<IAppState> {
-    basket: string[];
-    catalog: LotItem[];
+    catalog: ILot[];
+    basket: ILot[];
     loading: boolean;
     order: IOrder = {
         payment: '',
@@ -26,7 +30,7 @@ export class AppState extends Model<IAppState> {
     preview: string | null;
     formErrors: FormErrors = {}
 
-    toggleOrderedLot(id: string, isIncluded: boolean) {
+    toggleOrderedLot(id: string, isIncluded: boolean): void {
         if (isIncluded) {
             this.order.items = _.uniq([...this.order.items, id]);
         } else {
@@ -34,30 +38,30 @@ export class AppState extends Model<IAppState> {
         }
     }
 
-    clearBasket() {
+    clearBasket(): void {
         this.order.items.forEach(id => {
             this.toggleOrderedLot(id, false);
         });
     }
 
-    getTotal() {
+    getTotal(): number {
         return this.order.items.reduce(
             (a, c) => a + this.catalog.find(it => it.id === c).price,
             0
         );
     }
 
-    setCatalog(items: ILot[]){
+    setCatalog(items: ILot[]): void{
         this.catalog = items.map(item => new LotItem(item, this.events));
         this.emitChanges('items:changed', { catalog: this.catalog });
     }
     
-    setPreview(item: LotItem){
+    setPreview(item: ILot){
         this.preview = item.id;
         this.emitChanges('preview:changed', item);
     }
 
-    validateOrder() {
+    validateOrder(): boolean {
         const errors: typeof this.formErrors = {};
         if (this.order.payment === '') {
             errors.email = 'Необходимо выбрать способ оплаты';

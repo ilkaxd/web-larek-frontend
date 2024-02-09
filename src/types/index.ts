@@ -3,7 +3,7 @@ type PaymentType = 'online' | 'offline' | '';
 
 interface ILarek {
     category: LotCategory;
-    datetime: string;
+    isAvailable: boolean;
     price: number;
 }
 
@@ -20,10 +20,10 @@ type IBasketItem = Pick<ILot, 'id' | 'title' | 'price'>;
 
 interface IAppState {
     catalog: ILot[];
-    basket: string[];
-    preview: string | null;
-    order: IOrder | null;
+    basket: IBasketItem[];
     loading: boolean;
+    order: IOrder | null;
+    preview: string | null;    
 }
 
 interface IOrderDeliveryForm {
