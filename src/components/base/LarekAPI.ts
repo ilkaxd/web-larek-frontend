@@ -1,5 +1,5 @@
-import { Api, ApiListResponse } from "./base/api";
-import { IOrder, IOrderResult, ILot  } from "../types";  
+import { Api, ApiListResponse } from "./api";
+import { IOrder, IOrderResult, ILot  } from "../../types";  
 
 interface ILarekAPI {
   getLotItem: (id: string) => Promise<ILot>;
@@ -8,7 +8,7 @@ interface ILarekAPI {
 }
 
 class LarekAPI extends Api implements ILarekAPI {
-    readonly cdn: string;
+    private readonly cdn: string;
 
     constructor(cdn: string, baseUrl: string, options?: RequestInit) {
         super(baseUrl, options)

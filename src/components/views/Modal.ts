@@ -1,24 +1,35 @@
+import { IModalData } from "../../types";
 import { ensureElement } from "../../utils/utils";
-import { Component } from "../base/Component";
+import { Component } from "./Component";
 import { IEvents } from "../base/events";
 
-interface IModalData {
-    content: HTMLElement;
-}
 
-
+/**
+ * View-класс модального окна
+ */
 class Modal extends Component<IModalData>{
-    protected _closeButton: HTMLButtonElement;
-    protected _content: HTMLElement;
+    private _closeButton: HTMLButtonElement;
+    private _content: HTMLElement;
 
+    /**
+     * Базовый конструктор
+     * @constructor
+     * @param { HTMLElement } container - родительский контейнер для элементы 
+     * @param { IEvents } events - брокер событий
+     */
     constructor(container: HTMLElement, events: IEvents){
         super(container, events);
 
+        // Используемые элементы на странице
         this._closeButton = ensureElement<HTMLButtonElement>('.modal__close', container);
-        this._content = ensureElement<HTMLElement>('modal__content', container);
+        this._content = ensureElement<HTMLElement>('.modal__content', container);
 
-        this._closeButton.addEventListener('click', this.close);
-        this.container.addEventListener('click', this.close.bind(this));
+        // Подписываемся на клики
+        [this._closeButton, this.container].forEach(element => {
+            element.addEventListener('click', () => {
+                this.events.emit('modal:close');
+            })
+        });
         this._content.addEventListener('click', (event) => event.stopPropagation());
     }
 
