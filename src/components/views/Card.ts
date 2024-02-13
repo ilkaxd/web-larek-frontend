@@ -71,18 +71,6 @@ class Card extends Component<ILot> {
         this.setImage(this._image, value, this.title)
     }
 
-    // set description(value: string | string[]) {
-    //     if (Array.isArray(value)) {
-    //         this._description.replaceWith(...value.map(str => {
-    //             const descTemplate = this._description.cloneNode() as HTMLElement;
-    //             this.setText(descTemplate, str);
-    //             return descTemplate;
-    //         }));
-    //     } else {
-    //         this.setText(this._description, value);
-    //     }
-    // }
-
     set price(value: number){
         this.setText(this._price, value ? `${formatNumber(value)} синапсов` : "Бесценно");
     }
@@ -100,14 +88,6 @@ export class CatalogItem extends Card {
         super('card', container, events, actions);
         this._status = ensureElement<HTMLElement>(`.card__status`, container);
     }
-
-    // set status({ status, label }: CatalogItemStatus) {
-    //     this.setText(this._status, label);
-    //     this._status.className = clsx('card__status', {
-    //         [bem(this.blockName, 'status', 'active').name]: status === 'active',
-    //         [bem(this.blockName, 'status', 'closed').name]: status === 'closed'
-    //     });
-    // }
 }
 
 export { Card }

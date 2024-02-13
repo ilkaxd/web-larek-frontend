@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { FormErrors, IAppState, ILot, IOrder, CatalogChangeEvent, PaymentType} from "../../types";
+import { FormErrors, IAppState, ILot, IOrder, CatalogChangeEvent, IPaymentType} from "../../types";
 import { Model } from "./Model";
 import { IEvents } from "../base/events";
 import { LotItem } from "./LotItem";
@@ -9,17 +9,14 @@ import { LotItem } from "./LotItem";
  */
 class AppState extends Model<IAppState> {
     private _catalog: ILot[];
-    private _loading: boolean;
     private _order: IOrder;
     private _preview: string | null;
-    private _formErrors: FormErrors;
 
     constructor(
         data: Partial<IAppState>,
         events: IEvents
     ){
         super(data, events);
-        this._formErrors = {};
     }
 
     set catalog(items: ILot[]){
@@ -33,6 +30,10 @@ class AppState extends Model<IAppState> {
 
     get basket(){
         return this._catalog.filter(item => item.isOrdered);
+    }
+
+    isLotInBasket(item: ILot): boolean{
+        return this.basket.includes(item);
     }
 
     // toggleOrderedLot(id: string, isIncluded: boolean): void {
@@ -57,9 +58,7 @@ class AppState extends Model<IAppState> {
     //     // );
     // }
 
-    // isLotInBasket(item: ILot): boolean{
-    //     return this.basket.includes(item);
-    // }
+
     
     // setPreview(item: ILot){
     //     this.preview = item.id;

@@ -22,11 +22,11 @@ interface ILarek {
 type ILot = ILarek & ILotItem;
 
 // Доступные категории платежей
-type PaymentType = 'online' | 'offline' | '';
+type IPaymentType = 'online' | 'offline' | '';
 
 // Интерфейс формы оплатой и доставкой
 interface IOrderDeliveryForm {
-    payment: PaymentType;
+    payment: IPaymentType;
     address: string;
 }
 
@@ -54,10 +54,11 @@ type IBasketItem = Pick<ILot, 'id' | 'title' | 'price'>;
 
 interface IAppState {
     catalog: ILot[];
-    basket: IBasketItem[];
     loading: boolean;
     order: IOrder | null;
-    preview: string | null;    
+    preview: string | null;
+
+    get basket(): IBasketItem[];    
 }
 
 
@@ -88,7 +89,7 @@ interface IModalData {
 
 export {
     ILotCategory, ILotItem, ILarek, ILot,
-    PaymentType, IOrderDeliveryForm, IOrderContactsForm, IOrderForm, IOrder,
+    IPaymentType, IOrderDeliveryForm, IOrderContactsForm, IOrderForm, IOrder,
     IBasketItem, IAppState, IOrderResult, CatalogChangeEvent,
     IPage, IModalData
 }

@@ -137,15 +137,21 @@ presenter.appData = appData;
 // });
 
 // Инициализируем первоначальную подгрузку лотов
+// api
+// .getLotList()
+// .then((res) => {
+//     appData.catalog = res;
+// })
+// .catch(err => {
+//     console.log(err);
+// });
+
 api
 .getLotList()
-.then((res) => {
-    appData.catalog = res;
-})
-.catch(err => {
-    console.log(err);
+.then(res =>{
+    const lot = new LotItem(res[0], presenter);
+    console.log(lot);
 });
-
 
 
 

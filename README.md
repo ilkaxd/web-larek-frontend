@@ -7,7 +7,10 @@
 Структура проекта:
 - src/ — исходные файлы проекта
 - src/components/ — папка с JS компонентами
-- src/components/base/ — папка с базовым кодом
+- src/components/base/ — папка с базовым кодом + класс Presenter
+- src/components/models/ - папка с используемыми классами Model
+- src/components/views/ - папка с используемыми классами View
+
 
 Важные файлы:
 - src/pages/index.html — HTML-файл главной страницы
@@ -42,6 +45,39 @@ npm run build
 ```
 yarn build
 ```
+
+## Архитектура
+
+Приложение реализовано по MVP архитектуре и состоит из компонентов:
+
+1. Model - объекты 
+
+## Базовый код
+
+### 1. Класс `n`
+
+## Ключевые типы данных
+
+```
+// Основные типы
+
+// Настройки приложения
+interface AppState {
+    card
+}
+
+// Все события в игре
+enum Events {
+    CLICK_CARD = 'ui:click-card'
+    // Добавить остальные события
+}
+```
+
+## Размещение в сети
+
+Код проекта доступен по адресу: [https://github.com/ilkaxd/web-larek-frontend](https://github.com/ilkaxd/web-larek-frontend)
+
+Рабочая версия приложения доступна по адресу: тут нужно добавить адрес
 
 // View
 // Страница
