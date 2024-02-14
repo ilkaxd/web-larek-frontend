@@ -1,4 +1,4 @@
-import { createElement, ensureElement, formatNumber } from "../../utils/utils";
+import { createElement, ensureElement, formatNumber, formatSinaps } from "../../utils/utils";
 import { Component } from "./Component";
 import { EventEmitter } from "../base/events";
 
@@ -7,21 +7,32 @@ interface IBasketView {
     total: number;
 }
 
+/**
+ * View-класс корзины
+ */
 class Basket extends Component<IBasketView> {
     protected _list: HTMLElement;
     protected _total: HTMLElement;
     protected _button: HTMLElement;
 
+    /**
+     * Базовый конструктор
+     * @constructor
+     * @param { HTMLElement } container родительский контейнер для элементы 
+     * @param { IEvents } events брокер событий
+     */
     constructor(container: HTMLElement, events: EventEmitter){
         super(container, events);
 
+        // Используемые элементы на странице
         this._list = ensureElement<HTMLElement>('.basket__list', this.container);
-        this._total = this.container.querySelector('.basket__total');
+        this._total = this.container.querySelector('.basket__price');
         this._button = this.container.querySelector('.basket__action');
 
+        // Прослушиваем событие запуска формы оформления заказа
         if (this._button) {
             this._button.addEventListener('click', () => {
-                events.emit('order:open');
+                events.emit('order_payment:open');
             });
         }
 
@@ -39,7 +50,7 @@ class Basket extends Component<IBasketView> {
     }
 
     set total(total: number){
-        this.setText(this._total, formatNumber(total));
+        this.setText(this._total, formatSinaps(total));
     }
 }
 

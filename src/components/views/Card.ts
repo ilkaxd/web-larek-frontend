@@ -1,5 +1,5 @@
 import { ILot, ILotCategory } from "../../types";
-import { ensureElement, formatNumber } from "../../utils/utils";
+import { ensureElement, formatNumber, formatSinaps } from "../../utils/utils";
 import { Component } from "./Component";
 import { IEvents } from "../base/events";
 
@@ -7,7 +7,19 @@ interface ICardActions {
     onClick: (event: MouseEvent) => void;
 }
 
-class Card extends Component<ILot> {
+export interface ICard {
+	category: string;
+	title: string;
+	image: string;
+	price: number;
+	description: string;
+	button?: string;
+}
+
+/**
+ * View-класс карточки
+ */
+class Card extends Component<ICard> {
     private _category: HTMLElement;
     private _title: HTMLElement;
     private _image?: HTMLImageElement;
@@ -55,14 +67,6 @@ class Card extends Component<ILot> {
         this._category.classList.add(mainClass, `${mainClass}_${additionalClass}`);
     }
 
-    // set id(value: string) {
-    //     this.container.dataset.id = value;
-    // }
-
-    // get id(): string {
-    //     return this.container.dataset.id || '';
-    // }
-
     set title(value: string) {
         this.setText(this._title, value);
     }
@@ -72,22 +76,59 @@ class Card extends Component<ILot> {
     }
 
     set price(value: number){
-        this.setText(this._price, value ? `${formatNumber(value)} синапсов` : "Бесценно");
+        this.setText(this._price, formatSinaps(value));
+    }
+
+    set button(value: string){
+        this.setText(this._button, value);
     }
 }
 
-export type CatalogItemStatus = {
-    // status: LotStatus,
-    label: string
-};
+interface IBasketCard {
+    index: number,
+    title: string,
+    price: number,
+    delete:() => void;
+}
 
-export class CatalogItem extends Card {
-    protected _status: HTMLElement;
+/**
+ * View-класс карточки в корзине
+ */
+class BasketItem extends Component<IBasketCard> {
+	protected _index: HTMLElement;
+	protected _title: HTMLElement;
+	protected _price: HTMLElement;
+	protected _deleteBtn: HTMLButtonElement;
 
     constructor(container: HTMLElement, events: IEvents, actions?: ICardActions) {
-        super('card', container, events, actions);
-        this._status = ensureElement<HTMLElement>(`.card__status`, container);
+		super(container, events);
+
+		this._index = ensureElement<HTMLElement>(`.basket__item-index`, container);
+		this._title = ensureElement<HTMLElement>(`.card__title`, container);
+		this._price = ensureElement<HTMLElement>(`.card__price`, container);
+		this._deleteBtn = container.querySelector(`.card__button`);
+        
+		this._deleteBtn.addEventListener('click', (event: MouseEvent) => {
+			// event.preventDefault();
+			actions.onClick?.(event);
+			return false;
+		});
+	}
+
+    set index(value: number){
+        this.setText(this._index, value + 1);
     }
+
+    set title(value: string) {
+		this.setText(this._title, value);
+	}
+
+    set price(value: number) {
+		this.setText(
+			this._price,
+			formatSinaps(value)
+		);
+	}
 }
 
-export { Card }
+export { BasketItem, Card}

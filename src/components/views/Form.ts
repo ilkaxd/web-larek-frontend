@@ -7,7 +7,10 @@ interface IFormState {
     errors: string[];
 }
 
-export class Form<T> extends Component<IFormState> {
+/**
+ * View-класс формы
+ */
+class Form<T> extends Component<IFormState> {
     protected _submit: HTMLButtonElement;
     protected _errors: HTMLElement;
 
@@ -50,6 +53,7 @@ export class Form<T> extends Component<IFormState> {
         super.render({valid, errors});
         Object.assign(this, inputs);
         return this.container;
-
     }
 }
+
+export { Form }

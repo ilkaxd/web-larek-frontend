@@ -1,5 +1,5 @@
 import { cloneTemplate, ensureElement } from "../../utils/utils";
-import { AppState } from "../models/AppData";
+import { AppState } from "../models/AppState";
 import { Card } from "../views/Card";
 import { LarekAPI } from "./LarekAPI";
 import { Modal } from "../views/Modal";

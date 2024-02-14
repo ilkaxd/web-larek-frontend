@@ -1,7 +1,7 @@
 import { IEvents} from "../base/events";
 
 /**
- * Базовый компонент
+ * Базовый класс View
  */
 export abstract class Component<T> {
     protected constructor(
@@ -60,7 +60,7 @@ export abstract class Component<T> {
     }
 
     /**
-     * Установить изображение с алтернативным текстом
+     * Установить изображение с альтернативным текстом
      * @param { HTMLElement } element объект изображения
      * @param { string } src путь до картинки
      * @param { string } alt альтернативный текст для картинки

@@ -1,5 +1,5 @@
 import { IPage } from "../../types";
-import { ensureElement } from "../../utils/utils";
+import { ensureElement, formatNumber } from "../../utils/utils";
 import { Component } from "./Component";
 import { IEvents } from "../base/events";
 
@@ -16,8 +16,8 @@ class Page extends Component<IPage> {
     /**
      * Базовый конструктор
      * @constructor
-     * @param { HTMLElement } container - родительский контейнер для элементы 
-     * @param { IEvents } events - брокер событий
+     * @param { HTMLElement } container родительский контейнер для элементы 
+     * @param { IEvents } events брокер событий
      */
     constructor(container: HTMLElement, events: IEvents){
         super(container, events);
@@ -38,7 +38,7 @@ class Page extends Component<IPage> {
      * Устанавливаем количество лотов в корзине
      */
     set counter(value: number) {
-        this.setText(this._counter, String(value));
+        this.setText(this._counter, formatNumber(value));
     }
 
     /**
@@ -52,11 +52,7 @@ class Page extends Component<IPage> {
      * Обрабатываем блокировку страницы 
      */
     set locked(value: boolean) {
-        if (value) {
-            this._wrapper.classList.add('page__wrapper_locked');
-        } else {
-            this._wrapper.classList.remove('page__wrapper_locked');
-        }
+        this.toggleClass(this._wrapper, 'page__wrapper_locked', value)
     }
 }
 

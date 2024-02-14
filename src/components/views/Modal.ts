@@ -24,9 +24,10 @@ class Modal extends Component<IModalData>{
         this._closeButton = ensureElement<HTMLButtonElement>('.modal__close', container);
         this._content = ensureElement<HTMLElement>('.modal__content', container);
 
-        // Подписываемся на клики
+        // Подписываемся на клики для закрытия
         [this._closeButton, this.container].forEach(element => {
             element.addEventListener('click', () => {
+                this.close();
                 this.events.emit('modal:close');
             })
         });
@@ -37,13 +38,19 @@ class Modal extends Component<IModalData>{
         this._content.replaceChildren(value);
     }
 
+    /**
+     * Показываем модальное окно
+     */
     open(): void {
-        this.container.classList.add('modal_active');
+        this.toggleClass(this.container, 'modal_active', true);
         this.events.emit('modal:open');
     }
 
+    /**
+     * Закрываем модальное окно
+     */
     close(): void{
-        this.container.classList.remove('modal_active');
+        this.toggleClass(this.container, 'modal_active', false);
         this.content = null;
         this.events.emit('modal:close');
     }

@@ -16,10 +16,12 @@ interface ILotItem {
 // Интерфейс отслеживания карточки
 interface ILarek {
     isOrdered: boolean;
+    placeInBasket:() => void;
+    removeFromBasket:() => void;
 }
 
 // Интерфейс карточки в приложении
-type ILot = ILarek & ILotItem;
+type ILot = ILotItem & ILarek;
 
 // Доступные категории платежей
 type IPaymentType = 'online' | 'offline' | '';
@@ -41,8 +43,15 @@ type IOrderForm = IOrderDeliveryForm & IOrderContactsForm
 
 // Интерфейс заказа
 interface IOrder extends IOrderForm{
-    items: ILot[]
+    items: ILot[];
+
+    validateOrder(): void;
+    clearOrder(): void;
+    postOrder(): void;
 }
+
+export type IFormErrors = Partial<Record<keyof IOrderForm, string>>;
+
 
 type CatalogChangeEvent = {
     catalog: ILot[]
@@ -52,19 +61,16 @@ type CatalogChangeEvent = {
 
 type IBasketItem = Pick<ILot, 'id' | 'title' | 'price'>;
 
-interface IAppState {
-    catalog: ILot[];
-    loading: boolean;
-    order: IOrder | null;
-    preview: string | null;
-
-    get basket(): IBasketItem[];    
+interface IAppState {  // Модель приложения
+    catalog: ILot[];  // доступные лоты
+    basket: ILot[];  // лоты в корзине
+    order: IOrder;  // заказ
+    preview: ILot;  // лот для модального окна
+    isLotInBasket(item: ILot): boolean;  // проверка находится ли лот в корзине
+    clearBasket(): void;  // очищаем корзину
+    getTotalAmount(): number;  // получить стоимость корзины
+    getBasketLength(): number;  // получить количество товаров в корзине
 }
-
-
-
-
-export type FormErrors = Partial<Record<keyof IOrder, string>>;
 
 interface IOrderResult {
     id: string

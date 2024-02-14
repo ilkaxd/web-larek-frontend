@@ -7,153 +7,171 @@ import { cloneTemplate, createElement, ensureElement} from './utils/utils';
 import { EventEmitter } from './components/base/events';
 import { LarekAPI } from './components/base/LarekAPI';
 import { API_URL, CDN_URL } from './utils/constants';
-// import { AppState, CatalogChangeEvent } from './components/models/AppData';
 import { Page } from './components/views/Page';
 import { Modal } from './components/views/Modal';
-import { Order } from './components/views/Order';
 import { Basket } from './components/views/Basket';
-import { CatalogItem } from './components/views/Card';
+import { BasketItem, Card } from './components/views/Card';
 import { Success } from './components/views/Success';
-import { IOrderForm } from './types';
+import { CatalogChangeEvent, ILot, IOrderForm } from './types';
 import { LarekPresenter } from './components/base/Presenter';
 import { LotItem } from './components/models/LotItem';
-import { AppState } from './components/models/AppData';
+import { AppState } from './components/models/AppState';
 
 // Создаём объект events и объект API
 const api = new LarekAPI(CDN_URL, API_URL);
-
-
+const events = new EventEmitter();
 
 // Все шаблоны
-const successTemplate = ensureElement<HTMLTemplateElement>('#success');
+const cardCatalogTemplate = ensureElement<HTMLTemplateElement>('#card-catalog');
+const cardPreviewTemplate = ensureElement<HTMLTemplateElement>('#card-preview');
+
 const cardBasketTemplate = ensureElement<HTMLTemplateElement>('#card-basket');
 const basketTemplate = ensureElement<HTMLTemplateElement>('#basket');
-const orderTemplate = ensureElement<HTMLTemplateElement>('#order');
-const contactsTemplate = ensureElement<HTMLTemplateElement>('#contacts');
 
-// // Объект Presenter
-const presenter = new LarekPresenter(api);
+const deliveryTemplate = ensureElement<HTMLTemplateElement>('#order');
+const contactsTemplate = ensureElement<HTMLTemplateElement>('#contacts');
+const successTemplate = ensureElement<HTMLTemplateElement>('#success');
 
 // Мониторим события (для отладки)
-presenter.onAll(({ eventName, data }) => {
+events.onAll(({ eventName, data }) => {
     console.log(eventName, data);
 })
 
 // Объект Model
-const appData = new AppState({}, presenter);
+const appData = new AppState({}, events);
 
 // Глобальные View-контейнеры
-const page = new Page(document.body, presenter);
-const modal = new Modal(ensureElement<HTMLElement>('#modal-container'), presenter);
+const page = new Page(document.body, events);
+const modal = new Modal(ensureElement<HTMLElement>('#modal-container'), events);
 
-// Обратные привязки
-presenter.page = page;
-presenter.modal = modal;
-presenter.appData = appData;
+// Переиспользуемые части интерфейса
+const basket = new Basket(cloneTemplate(basketTemplate), events);
+// const deliveryForm = 
+// const contactsForm = 
 
-// // Переиспользуемые части интерфейса
-// const basket = new Basket(cloneTemplate(basketTemplate), events);
-// const order = new Order(cloneTemplate(orderTemplate), events);
 
-//Подвязываем события
-// events.on<CatalogChangeEvent>('items:changed', () => {
-//     page.catalog = appData.catalog.map(item => {
-//         const card = new CatalogItem(cloneTemplate(cardCatalogTemplate), {
-//             onClick: () => events.emit('card:select', item)
-//         });
-//         return card.render({
-//             title: item.title,
-//             image: item.image,
-//             description: item.description,
-//         })
-//     });
+// Бизнес-логика
 
-//     // page.c
-// });
-
-// // Отправлена форма заказа - сперва отправляем post запрос на сервер
-// // затем обновляем 
-// events.on('order:submit', () => {
-//     api.postOrderLots(appData.order)
-//     .then((result) => {
-//         const success = new Success(cloneTemplate(successTemplate), {
-//             onClick: () => {
-//                 modal.close();
-//                 appData.clearBasket();
-//                 events.emit('larek:changed');
-//             }
-//         });
-
-//         modal.render({
-//             content: success.render({})
-//         });
-//     })
-//     .catch(err => {
-//         console.error(err);
-//     });
-
-// })
-
-// // Изменилось состояние валидации формы
-// events.on('formErrors:change', (errors: Partial<IOrderForm>) => {
-//     const { email, phone } = errors;
-//     order.valid = !email && !phone;
-//     order.errors = Object.values({phone, email}).filter(i => !!i).join('; ');
-// })
-
-// // Изменилось одно из полей
-// events.on(/^order\..*:change/, (data: { field: keyof IOrderForm, value: string }) => {
-//     appData.setOrderFiled(data.field, data.value);
-// });
-
-// // Открыли форму заказа
-// events.on('order:open', () => {
-//     modal.render({
-//         content: order.render({
-//             phone: '',
-//             email: '',
-//             valid: '',
-//             errors: []
-//         })
-//     })
-// });
-
-// // Открыли корзину
-
-// // Изменения в лоте, но лучше все пересчитать
-
-// // Открыть лот
-
-// // Изменили открытый лот
-
-// // Блокируем прокрутку страницы при открытии модалки
-// events.on('modal:open', () => {
-//     page.locked = true;
-// });
-
-// // Разблокируем прокрутку страницы при закрытии модалки
-// events.on('modal:close', () => {
-//     page.locked = false;
-// });
-
-// Инициализируем первоначальную подгрузку лотов
-// api
-// .getLotList()
-// .then((res) => {
-//     appData.catalog = res;
-// })
-// .catch(err => {
-//     console.log(err);
-// });
-
-api
-.getLotList()
-.then(res =>{
-    const lot = new LotItem(res[0], presenter);
-    console.log(lot);
+// Обновили доступные лоты
+events.on<CatalogChangeEvent>('catalog:changed', () => {
+    // Отрисовываем каждую карточку
+    page.galery = appData.catalog.map(item => {
+        const card = new Card(
+            'card',
+            cloneTemplate(cardCatalogTemplate),
+            events,
+            { onClick: () => events.emit('card:open', item)}
+        );
+        return card.render({
+            category: item.category,
+            title: item.title,
+            image: item.image,
+            price: item.price
+        })
+    });
 });
 
+// Открыли корзину
+events.on('basket:open', () => {
+    modal.render({
+        content: basket.render({})
+    })
+});
 
+// Открыли модалку карточки
+events.on('card:open', (item: ILot) => {
+    // актуализируем информацию по лоту
+    api
+    .getLotItem(item.id)
+    .then(res => {
+        item.id = res.id;
+        item.description = res.description;
+        item.image = res.image;
+        item.title = res.title;
+        item.category = res.category;
+        item.price = res.price;
+    })
+    .catch(err => console.log(err));
+    // Отображаем результат
+    const card = new Card(
+        'card',
+        cloneTemplate(cardPreviewTemplate),
+        events,
+        {
+            onClick: () => {
+                if (appData.isLotInBasket(item)){
+                    item.removeFromBasket();
+                } else {
+                    item.placeInBasket();
+                }
+                events.emit('card:open', item);
+            }
+        }
+    );
 
+    modal.render({
+        content: card.render({
+            category: item.category,
+            title: item.title,
+            description: item.description,
+            image: item.image,
+            price: item.price,
+            button: item.isOrdered ? "Удалить" : "Купить"
+        })
+    });
+});
 
-// console.log(lot)
+// Любые изменения в любом из лотов
+events.on('lot:changed', () => {
+    page.counter = appData.getBasketLength();
+
+    basket.items = appData.basket.map((item, index) => {
+        const card = new BasketItem(cloneTemplate(cardBasketTemplate), events, {
+            onClick: (event) => {
+                item.removeFromBasket();
+            }
+        });
+        return card.render({
+            index: index,
+            title: item.title,
+            price: item.price
+        })
+    });
+
+    basket.total = appData.getTotalAmount();
+});
+
+// Открываем первую форму
+events.on('order_payment:open', () => {
+    // При открытии первой формы, очищаем всё
+    appData.order.clearOrder();
+
+    // modal.render({
+    //     content: 
+    // })
+});
+
+// Изменилось поле адреса
+events.on(/^order\..*:change/, (data: { field: keyof IOrderForm, value: string }) => {
+    appData.order.set(data.field, data.value);
+});
+
+// Блокируем прокрутку страницы при открытии модалки
+events.on('modal:open', () => {
+    page.locked = true;
+});
+
+// Разблокируем прокрутку страницы при закрытии модалки
+events.on('modal:close', () => {
+    page.locked = false;
+});
+
+// Инициализируем первоначальную подгрузку лотов
+api
+.getLotList()
+.then((res) => {
+    appData.catalog = res;
+})
+.catch(err => {
+    console.log(err);
+});
