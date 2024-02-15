@@ -1,90 +1,102 @@
-import _ from "lodash";
-import { IAppState, ILot, IOrder, IOrderForm } from "../../types";
-import { Model } from "./Model";
-import { IEvents } from "../base/events";
-import { LotItem } from "./LotItem";
+import _ from 'lodash';
+import { IAppState, ILot, IOrder } from '../../types';
+import { Model } from './Model';
+import { IEvents } from '../base/events';
+import { LotItem } from './LotItem';
+import { Order } from './Order';
 
 /**
  * Класс модели приложения
  */
 class AppState extends Model<IAppState> {
-    private _catalog: ILot[];
-    private _order: IOrder;
-    private _preview: ILot;
+	private _catalog: ILot[];
+	private _order: IOrder;
+	private _preview: ILot;
 
-    /**
-     * Базовый конструктор
-     * @constructor
-     * @param { Partial<IAppState> } data используемые моделью данные
-     * @param { IEvents } events объект брокера событий
-     */
-    constructor(
-        data: Partial<IAppState>,
-        events: IEvents
-    ){
-        super(data, events);
-    }
+	/**
+	 * Базовый конструктор
+	 * @constructor
+	 * @param { Partial<IAppState> } data используемые моделью данные
+	 * @param { IEvents } events объект брокера событий
+	 */
+	constructor(data: Partial<IAppState>, events: IEvents) {
+		super(data, events);
+	}
 
-    set catalog(items: ILot[]){
-        this._catalog = items.map(item => new LotItem(item, this.events));
-        this.emitChanges('catalog:changed', { catalog: this.catalog });
-    }
+	set catalog(items: ILot[]) {
+		this._catalog = items.map((item) => new LotItem(item, this.events));
+		this.emitChanges('catalog:changed', { catalog: this.catalog });
+	}
 
-    get catalog(): ILot[] {
-        return this._catalog;
-    }
+	get catalog(): ILot[] {
+		return this._catalog;
+	}
 
-    get basket(): ILot[] {
-        return this._catalog.filter(item => item.isOrdered);
-    }
+	get basket(): ILot[] {
+		return this._catalog.filter((item) => item.isOrdered);
+	}
 
-    get order(): IOrder {
-        return this._order;
-    }
+	get order(): IOrder {
+		return this._order;
+	}
 
-    get preview(): ILot {
-        return this._preview;
-    }
+	get preview(): ILot {
+		return this._preview;
+	}
 
-    set preview(value: ILot) {
-        this._preview = value;
-        this.emitChanges('preview:changed', this.preview);
-    }
+	set preview(value: ILot) {
+		this._preview = value;
+		this.emitChanges('preview:changed', this.preview);
+	}
 
-    /**
-     * Проверяем что лот находится в каталоге
-     * @param { ILot } item исследуемый лот
-     * @returns признак наличия лота в корзине
-     */
-    isLotInBasket(item: ILot): boolean {
-        return item.isOrdered;
-    }
+	/**
+	 * Проверяем, что лот находится в каталоге
+	 * @param { ILot } item исследуемый лот
+	 * @returns признак наличия лота в корзине
+	 */
+	isLotInBasket(item: ILot): boolean {
+		return item.isOrdered;
+	}
 
-    /**
-     * Очищаем корзину
-     */
-    clearBasket(): void {
-        this.basket.forEach(lot => lot.removeFromBasket());
-    }
+	/**
+	 * Очищаем корзину
+	 */
+	clearBasket(): void {
+		this.basket.forEach((lot) => lot.removeFromBasket());
+	}
 
-    /**
-     * Получить общую стоимость товаров в корзине
-     * @returns стоимость корзины
-     */
-    getTotalAmount(): number {
-        return this.basket.reduce(
-            (a, c) => a + c.price,
-            0
-        );
-    }
+	/**
+	 * Получить общую стоимость товаров в корзине
+	 * @returns стоимость корзины
+	 */
+	getTotalAmount(): number {
+		return this.basket.reduce((a, c) => a + c.price, 0);
+	}
 
-    /**
-     * Получить количество товаров в корзине
-     * @returns количество товаров в корзине
-     */
-    getBasketLength(): number {
-        return this.basket.length;
-    }
+	/**
+	 * Получить список индексов в корзине
+	 * @returns список индексов в корзине
+	 */
+	getBasketIds(): string[] {
+		return this.basket.map((item) => item.id);
+	}
+
+	/**
+	 * Получить количество товаров в корзине
+	 * @returns количество товаров в корзине
+	 */
+	getBasketLength(): number {
+		return this.basket.length;
+	}
+
+	/**
+	 * Инициализируем объект заказа
+	 */
+	initOrder(): IOrder {
+		this._order = new Order({}, this.events);
+		this.order.clearOrder();
+		return this.order;
+	}
 }
 
-export { AppState }
+export { AppState };

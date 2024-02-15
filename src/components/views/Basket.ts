@@ -1,57 +1,65 @@
-import { createElement, ensureElement, formatNumber, formatSinaps } from "../../utils/utils";
-import { Component } from "./Component";
-import { EventEmitter } from "../base/events";
+import { createElement, ensureElement, formatSinaps } from '../../utils/utils';
+import { Component } from './Component';
+import { EventEmitter } from '../base/events';
 
+/**
+ * Интерфейс корзины
+ * @property { HTMLElement[] } items - отображение элементов в корзине
+ * @property { number } total - общая стоимость корзины
+ */
 interface IBasketView {
-    items: HTMLElement[];
-    total: number;
+	items: HTMLElement[];
+	total: number;
 }
 
 /**
  * View-класс корзины
  */
 class Basket extends Component<IBasketView> {
-    protected _list: HTMLElement;
-    protected _total: HTMLElement;
-    protected _button: HTMLElement;
+	protected _list: HTMLElement;
+	protected _total: HTMLElement;
+	protected _button: HTMLElement;
 
-    /**
-     * Базовый конструктор
-     * @constructor
-     * @param { HTMLElement } container родительский контейнер для элементы 
-     * @param { IEvents } events брокер событий
-     */
-    constructor(container: HTMLElement, events: EventEmitter){
-        super(container, events);
+	/**
+	 * Базовый конструктор
+	 * @constructor
+	 * @param { HTMLElement } container родительский контейнер для элементы
+	 * @param { IEvents } events брокер событий
+	 */
+	constructor(container: HTMLElement, events: EventEmitter) {
+		super(container, events);
 
-        // Используемые элементы на странице
-        this._list = ensureElement<HTMLElement>('.basket__list', this.container);
-        this._total = this.container.querySelector('.basket__price');
-        this._button = this.container.querySelector('.basket__action');
+		// Используемые элементы на странице
+		this._list = ensureElement<HTMLElement>('.basket__list', this.container);
+		this._total = this.container.querySelector('.basket__price');
+		this._button = this.container.querySelector('.basket__button');
 
-        // Прослушиваем событие запуска формы оформления заказа
-        if (this._button) {
-            this._button.addEventListener('click', () => {
-                events.emit('order_payment:open');
-            });
-        }
+		// Прослушиваем событие запуска формы оформления заказа
+		if (this._button) {
+			this._button.addEventListener('click', () => {
+				events.emit('order_payment:open');
+			});
+		}
 
-        this.items = [];
-    }
+		// Инициализируем контейнер корзины
+		this.items = [];
+	}
 
-    set items(items: HTMLElement[]){
-        if (items.length) {
-            this._list.replaceChildren(...items);
-        } else {
-            this._list.replaceChildren(createElement<HTMLParagraphElement>('p', {
-                textContent: 'Корзина пуста'
-            }));
-        }
-    }
+	set items(items: HTMLElement[]) {
+		if (items.length) {
+			this._list.replaceChildren(...items);
+		} else {
+			this._list.replaceChildren(
+				createElement<HTMLParagraphElement>('p', {
+					textContent: 'Корзина пуста',
+				})
+			);
+		}
+	}
 
-    set total(total: number){
-        this.setText(this._total, formatSinaps(total));
-    }
+	set total(total: number) {
+		this.setText(this._total, formatSinaps(total));
+	}
 }
 
-export { Basket }
+export { Basket };

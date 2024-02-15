@@ -17,9 +17,11 @@ class Form<T> extends Component<IFormState> {
     constructor(protected container: HTMLFormElement, events: IEvents) {
         super(container, events);
 
+        // Используемые элементы на странице
         this._submit = ensureElement<HTMLButtonElement>('button[type=submit]', this.container);
         this._errors = ensureElement<HTMLElement>('.form__errors', this.container);
 
+        // Прослушиваем события ввода в поле
         this.container.addEventListener('input', (e: Event) => {
             const target = e.target as HTMLInputElement;
             const field = target.name as keyof T;
@@ -27,6 +29,7 @@ class Form<T> extends Component<IFormState> {
             this.onInputChange(field, value);
         });
 
+        // Прослушиваем событие нажатия кнопки закрытия формы
         this.container.addEventListener('submit', (e: Event) => {
             e.preventDefault();
             this.events.emit(`${this.container.name}:submit`);
@@ -34,7 +37,8 @@ class Form<T> extends Component<IFormState> {
     }
 
     protected onInputChange(field: keyof T, value: string): void {
-        this.events.emit(`${this.container.name}.${String(field)}:change`, {
+        const eventName = `${this.container.name}.${String(field)}:change`;
+        this.events.emit(eventName, {
             field,
             value
         });

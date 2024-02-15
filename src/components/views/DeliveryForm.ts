@@ -11,25 +11,26 @@ class DeliveryForm extends Form<IOrderDeliveryForm> {
     protected _paymentButtons: HTMLButtonElement[];
     
     constructor(container: HTMLFormElement, events: IEvents) {
-          super(container, events);
+      super(container, events);
+      
+      // Используемые элементы на странице
       this._paymentContainer = ensureElement<HTMLDivElement>('.order__buttons', this.container);
       this._paymentButtons = Array.from(this._paymentContainer.querySelectorAll('.button_alt'));
-  
+    
+      // Выбираем кнопку с типом оплаты
       this._paymentContainer.addEventListener('click', (e: MouseEvent) => {
         const target = e.target as HTMLButtonElement;
-  
         this.setClassPaymentMethod(target.name);
-  
-        events.emit(`payment:changed`, {target: target.name})
+        events.emit('payment:changed', {target: target.name})
       })
-      }
+    }
   
     setClassPaymentMethod(className: string): void {
       this._paymentButtons.forEach(btn => {
-        if(btn.name === className) {
-          btn.classList.add('button_alt-active');
+        if (btn.name === className) {
+          this.toggleClass(btn, 'button_alt-active', true);
         } else {
-          btn.classList.remove('button_alt-active');
+          this.toggleClass(btn, 'button_alt-active', false);
         }
       })
     }

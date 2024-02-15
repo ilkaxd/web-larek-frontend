@@ -1,5 +1,5 @@
-import { ILot, ILotCategory } from "../../types";
-import { ensureElement, formatNumber, formatSinaps } from "../../utils/utils";
+import { ILotCategory } from "../../types";
+import { ensureElement, formatSinaps } from "../../utils/utils";
 import { Component } from "./Component";
 import { IEvents } from "../base/events";
 
@@ -7,13 +7,22 @@ interface ICardActions {
     onClick: (event: MouseEvent) => void;
 }
 
-export interface ICard {
-	category: string;
-	title: string;
-	image: string;
-	price: number;
-	description: string;
-	button?: string;
+/**
+ * Интерфейс карточки
+ * @property { string } category - категория лота
+ * @property { string } title - заголовок лота
+ * @property { string } image - полный путь до файла картинки лота
+ * @property { number } price - цена лота
+ * @property { string } description - описание лота
+ * @property { string } button - текст на кнопки добавления лота в заказ
+ */
+interface ICard {
+	category: string;  // категория лота
+	title: string;  // заголовок лота
+	image: string;  // полный путь до файла картинки лота
+	price: number;  // цена лота
+	description: string;  // описание лота
+	button?: string;  // текст на кнопки добавления лота в заказ
 }
 
 /**
@@ -35,6 +44,14 @@ class Card extends Component<ICard> {
         'хард-скил': 'hard'
     } 
 
+    /**
+     * Базовый конструктор
+     * @constructor
+     * @param blockName - название блока
+     * @param container 
+     * @param events 
+     * @param actions 
+     */
     constructor(
         protected blockName: string, container: HTMLElement,
         events: IEvents,
@@ -84,51 +101,4 @@ class Card extends Component<ICard> {
     }
 }
 
-interface IBasketCard {
-    index: number,
-    title: string,
-    price: number,
-    delete:() => void;
-}
-
-/**
- * View-класс карточки в корзине
- */
-class BasketItem extends Component<IBasketCard> {
-	protected _index: HTMLElement;
-	protected _title: HTMLElement;
-	protected _price: HTMLElement;
-	protected _deleteBtn: HTMLButtonElement;
-
-    constructor(container: HTMLElement, events: IEvents, actions?: ICardActions) {
-		super(container, events);
-
-		this._index = ensureElement<HTMLElement>(`.basket__item-index`, container);
-		this._title = ensureElement<HTMLElement>(`.card__title`, container);
-		this._price = ensureElement<HTMLElement>(`.card__price`, container);
-		this._deleteBtn = container.querySelector(`.card__button`);
-        
-		this._deleteBtn.addEventListener('click', (event: MouseEvent) => {
-			// event.preventDefault();
-			actions.onClick?.(event);
-			return false;
-		});
-	}
-
-    set index(value: number){
-        this.setText(this._index, value + 1);
-    }
-
-    set title(value: string) {
-		this.setText(this._title, value);
-	}
-
-    set price(value: number) {
-		this.setText(
-			this._price,
-			formatSinaps(value)
-		);
-	}
-}
-
-export { BasketItem, Card}
+export { Card, ICardActions }

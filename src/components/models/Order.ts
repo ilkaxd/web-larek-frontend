@@ -1,60 +1,140 @@
-import { IFormErrors, ILot, IOrder, IOrderForm, IPaymentType } from "../../types";
-import { Model } from "./Model";
+import { IFormErrors, ILot, IOrder, IPaymentType } from '../../types';
+import { Model } from './Model';
 
 /**
  * Класс модели заказа
  */
 class Order extends Model<IOrder> {
-    payment: IPaymentType = "";
-    address: string = "";
-    email: string = "";
-    phone: string = "";
-    items: ILot[] = [];
-    formErrors: IFormErrors = {};
+	protected _payment: IPaymentType = '';
+	protected _address: string = '';
+	protected _email: string = '';
+	protected _phone: string = '';
+	protected _items: ILot[] = [];
+	protected _formErrors: IFormErrors = {};
 
-    /**
-     * Проверка полей формы
-     */
-    validateOrder(): void {
-        const errors: IFormErrors = {};
-        // Простейшая проверка, введены ли значения
-        if (!this.payment) {
-            errors.payment = 'Необходимо выбрать способ оплаты';
-        }
-        
-        if (!this.address) {
-            errors.address = 'Необходимо ввести адрес доставки';
-        }
+	/**
+	 * Проверка полей формы
+	 * TODO: возможно стоит разделить на валидацию первой формы и на второй
+	 */
+	validateOrder(): void {
+		this.validatePayment();
+		this.validateAddress();
+		this.validateEmail();
+		this.validatePhone();
 
-        if (!this.email) {
-            errors.email = 'Необходимо ввести e-mail';
-        }
+		this.emitChanges('formErrors:changed', this._formErrors);
+	}
 
-        if (!this.phone) {
-            errors.phone = 'Необходимо ввести телефон';
-        }
+	/**
+	 * Обнуляем поля заказа
+	 */
+	clearOrder(): void {
+		this._payment = '';
+		this._address = '';
+		this._email = '';
+		this._phone = '';
+	}
 
-        this.formErrors = errors;
-        this.emitChanges('formErrors:changed', this.formErrors);
-    }
+	set payment(value: IPaymentType) {
+		this._payment = value;
+		this.validateOrder();
+	}
 
-    /**
-     * Обнуляем поля заказа
-     */
-    clearOrder(): void {
-        this.payment = "";
-        this.address = "";
-        this.email = "";
-        this.phone = "";
-    }
+	get payment() {
+		return this._payment;
+	}
 
-    /**
-     * Завершаем заказ
-     */
-    postOrder(): void {
-        this.clearOrder();
-        this.emitChanges('order:post');
-    }
+	/**
+	 * Проверяем способ оплаты
+	 */
+	validatePayment(): void {
+		if (!this._payment) {
+			this._formErrors.payment = 'Необходимо выбрать способ оплаты';
+		} else {
+			this._formErrors.payment = '';
+		}
+	}
+
+	set address(value: string) {
+		this._address = value;
+		this.validateOrder();
+	}
+
+	get address() {
+		return this._address;
+	}
+
+	/**
+	 * Проверяем адрес доставки
+	 */
+	validateAddress(): void {
+		if (!this._address) {
+			this._formErrors.address = 'Необходимо ввести адрес доставки';
+		} else {
+			this._formErrors.address = '';
+		}
+		this.emitChanges('formErrors:changed', this._formErrors);
+	}
+
+	set email(value: string) {
+		this._email = value.toLowerCase();
+		this.validateOrder();
+	}
+
+	get email() {
+		return this._email;
+	}
+
+	/**
+	 * Проверяем почту
+	 * TODO: тут желательно сделать нормальную проверку на почту, например через такое /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+	 */
+	validateEmail(): void {
+		if (!this._email) {
+			this._formErrors.email = 'Необходимо ввести почту';
+		} else {
+			this._formErrors.email = '';
+		}
+		this.emitChanges('formErrors:changed', this._formErrors);
+	}
+
+	set phone(value: string) {
+		this._phone = value;
+		this.validateOrder();
+	}
+
+	get phone() {
+		return this._phone;
+	}
+
+	/**
+	 * Проверяем телефон
+	 * TODO: тут желательно сделать нормальную проверку на телефон, например через такое /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im
+	 */
+	validatePhone(): void {
+		if (!this._phone) {
+			this._formErrors.phone = 'Необходимо ввести телефон';
+		} else {
+			this._formErrors.phone = '';
+		}
+		this.emitChanges('formErrors:changed', this._formErrors);
+	}
+
+	set items(value: ILot[]) {
+		this._items = value;
+	}
+
+	get items() {
+		return this._items;
+	}
+
+	/**
+	 * Завершаем заказ
+	 */
+	postOrder(): void {
+		this.clearOrder();
+		this.emitChanges('order:post');
+	}
 }
 
-export { Order }
+export { Order };

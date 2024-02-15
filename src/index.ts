@@ -2,20 +2,20 @@
 import './scss/styles.scss';
 
 // Импорты компонентов и типов
-
-import { cloneTemplate, createElement, ensureElement} from './utils/utils';
+import { cloneTemplate, ensureElement} from './utils/utils';
 import { EventEmitter } from './components/base/events';
 import { LarekAPI } from './components/base/LarekAPI';
 import { API_URL, CDN_URL } from './utils/constants';
 import { Page } from './components/views/Page';
 import { Modal } from './components/views/Modal';
 import { Basket } from './components/views/Basket';
-import { BasketItem, Card } from './components/views/Card';
+import { Card } from './components/views/Card';
 import { Success } from './components/views/Success';
-import { CatalogChangeEvent, ILot, IOrderForm } from './types';
-import { LarekPresenter } from './components/base/Presenter';
-import { LotItem } from './components/models/LotItem';
+import { CatalogChangeEvent, IFormErrors, ILot, IPaymentType } from './types';
 import { AppState } from './components/models/AppState';
+import { DeliveryForm } from './components/views/DeliveryForm';
+import { ContactsForm } from './components/views/ContactsForm';
+import { BasketItem } from './components/views/BasketItem';
 
 // Создаём объект events и объект API
 const api = new LarekAPI(CDN_URL, API_URL);
@@ -46,8 +46,8 @@ const modal = new Modal(ensureElement<HTMLElement>('#modal-container'), events);
 
 // Переиспользуемые части интерфейса
 const basket = new Basket(cloneTemplate(basketTemplate), events);
-// const deliveryForm = 
-// const contactsForm = 
+const deliveryForm = new DeliveryForm(cloneTemplate(deliveryTemplate), events);
+const contactsForm = new ContactsForm(cloneTemplate(contactsTemplate), events); 
 
 
 // Бизнес-логика
@@ -143,18 +143,113 @@ events.on('lot:changed', () => {
 
 // Открываем первую форму
 events.on('order_payment:open', () => {
-    // При открытии первой формы, очищаем всё
-    appData.order.clearOrder();
-
-    // modal.render({
-    //     content: 
-    // })
+    const order = appData.initOrder();
+    modal.render({
+        content: deliveryForm.render({
+			payment: order.payment,
+			address: order.address,
+			valid: false,
+			errors: [],
+        })
+    })
 });
 
-// Изменилось поле адреса
-events.on(/^order\..*:change/, (data: { field: keyof IOrderForm, value: string }) => {
-    appData.order.set(data.field, data.value);
+// Изменили способ оплаты
+events.on('payment:changed', (data: { target: string }) => {
+    appData.order.payment = data.target as IPaymentType;
 });
+
+// Изменился адрес доставки
+events.on('order.address:change', (data: { value: string }) => {
+	appData.order.address = data.value;
+});
+
+// Изменился телефон
+events.on('contacts.email:change', (data: { value: string }) => {
+	appData.order.email = data.value;
+});
+
+// Изменилась почта
+events.on('contacts.phone:change', (data: { value: string }) => {
+	appData.order.phone = data.value;
+});
+
+// Изменилось состояние валидации формы доставки
+events.on('formErrors:changed', (errors: Partial<IFormErrors>) => {
+    // TODO: Лучше разнести
+    const { payment, address, email, phone } = errors;
+	deliveryForm.valid = !payment && !address;
+    contactsForm.valid = !email && !phone;
+	deliveryForm.errors = Object.values({ payment, address })
+		.filter((i) => !!i)
+		.join('; ');
+    contactsForm.errors = Object.values({ email, phone })
+		.filter((i) => !!i)
+		.join('; ');
+});
+
+// Заполнили первую форму оплаты
+events.on('order:submit', () => {
+	events.emit('order_contacts:open');
+});
+
+// Открываем вторую форму
+events.on('order_contacts:open', () => {
+    const order = appData.order;
+    modal.render({
+        content: contactsForm.render({
+			email: order.email,
+			phone: order.phone,
+			valid: false,
+			errors: [],
+        })
+    })
+});
+
+events.on('contacts:submit', () => {
+	// appData.order.postOrder();
+    const order = appData.order;
+
+	api
+    .postOrderLots(
+        // TODO: Лучше переделать
+        {
+            payment: order.payment,
+            address: order.address,
+            email: order.email,
+            phone: order.phone,
+            
+            total: appData.getTotalAmount(),
+            items: appData.getBasketIds()
+        }
+    )
+    .then((result) => {
+        const success = new Success(
+            cloneTemplate(successTemplate),
+            {
+                onClick: () => {
+                    modal.close();
+                    appData.clearBasket();
+                    events.emit('basket:changed');
+                },
+            },
+            events
+        );
+        modal.render({
+            content: success.render({
+                total: result.total
+            }),
+        });
+    })
+    .catch((err) => {
+        console.error(err);
+    });
+});
+
+// // Изменилось поле адреса
+// events.on(/^order\..*:change/, (data: { field: keyof IOrderForm, value: string }) => {
+//     appData.order.set(data.field, data.value);
+// });
 
 // Блокируем прокрутку страницы при открытии модалки
 events.on('modal:open', () => {
