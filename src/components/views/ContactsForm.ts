@@ -1,10 +1,30 @@
-import { IOrderContactsForm } from "../../types";
-import { IEvents } from "../base/events";
-import { Form } from "./Form";
+import { IEvents } from '../base/events';
+import { Form } from './Form';
 
-export class ContactsForm extends Form<IOrderContactsForm> {
+/**
+ * Интерфейс формы с контактной информацией
+ * @property { string } email - почта для связи
+ * @property { string } phone - телефон для связи
+ */
+interface IOrderContactsForm {
+	email: string; // почта для связи
+	phone: string; // телефон для связи
+}
+
+/**
+ * View-класс формы с контактной информацией
+ */
+class ContactsForm extends Form<IOrderContactsForm> {
+	/**
+	 * Базовый конструктор
+	 * @constructor
+	 * @param { HTMLFormElement } container - объект контейнера (темплейта)
+	 * @param { IEvents } events - брокер событий
+	 */
 	constructor(container: HTMLFormElement, events: IEvents) {
 		super(container, events);
+
+		// TODO: возможно стоит тут назначать привязку перехода по кнопке
 	}
 
 	set phone(value: string) {
@@ -17,3 +37,5 @@ export class ContactsForm extends Form<IOrderContactsForm> {
 			value;
 	}
 }
+
+export { IOrderContactsForm, ContactsForm };

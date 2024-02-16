@@ -1,5 +1,5 @@
 import { IFormErrors, ILot, IOrder, IPaymentType } from '../../types';
-import { Model } from './Model';
+import { Model } from '../base/Model';
 
 /**
  * Класс модели заказа

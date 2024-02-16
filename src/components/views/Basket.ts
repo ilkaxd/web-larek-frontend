@@ -1,5 +1,5 @@
 import { createElement, ensureElement, formatSinaps } from '../../utils/utils';
-import { Component } from './Component';
+import { Component } from '../base/Component';
 import { EventEmitter } from '../base/events';
 
 /**
@@ -23,13 +23,13 @@ class Basket extends Component<IBasketView> {
 	/**
 	 * Базовый конструктор
 	 * @constructor
-	 * @param { HTMLElement } container родительский контейнер для элементы
+	 * @param { HTMLElement } container объект контейнера (темплейта)
 	 * @param { IEvents } events брокер событий
 	 */
 	constructor(container: HTMLElement, events: EventEmitter) {
 		super(container, events);
 
-		// Используемые элементы на странице
+		// Используемые элементы корзины
 		this._list = ensureElement<HTMLElement>('.basket__list', this.container);
 		this._total = this.container.querySelector('.basket__price');
 		this._button = this.container.querySelector('.basket__button');

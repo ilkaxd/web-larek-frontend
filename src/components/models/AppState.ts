@@ -1,12 +1,13 @@
 import _ from 'lodash';
 import { IAppState, ILot, IOrder } from '../../types';
-import { Model } from './Model';
+import { Model } from '../base/Model';
 import { IEvents } from '../base/events';
 import { LotItem } from './LotItem';
 import { Order } from './Order';
 
 /**
  * Класс модели приложения
+ * TODO: может стоит его сделать через Singleton
  */
 class AppState extends Model<IAppState> {
 	private _catalog: ILot[];

@@ -1,5 +1,5 @@
 import { ILot, ILotCategory } from '../../types';
-import { Model } from './Model';
+import { Model } from '../base/Model';
 
 /**
  * Класс модели лота

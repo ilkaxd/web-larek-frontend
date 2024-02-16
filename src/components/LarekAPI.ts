@@ -1,5 +1,5 @@
-import { Api, ApiListResponse } from './api';
-import { ILot, IOrderAPI } from '../../types';
+import { Api, ApiListResponse } from './base/api';
+import { ILot, IOrderAPI } from '../types';
 
 /**
  * Интерфейс API для сервиса web-larek
