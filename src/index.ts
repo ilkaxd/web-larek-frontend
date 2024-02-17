@@ -122,7 +122,6 @@ events.on('lot:changed', () => {
 // Открываем первую форму
 events.on('order_payment:open', () => {
 	const order = appData.initOrder();
-	console.log(order.payment);
 	modal.render({
 		content: deliveryForm.render({
 			payment: order.payment,
@@ -244,6 +243,4 @@ api
 	.then((res) => {
 		appData.catalog = res;
 	})
-	.catch((err) => {
-		console.log(err);
-	});
+	.catch(console.error);
