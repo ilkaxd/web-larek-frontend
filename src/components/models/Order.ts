@@ -1,4 +1,4 @@
-import { IFormErrors, ILot, IOrder, IPaymentType } from '../../types';
+import { Events, IFormErrors, ILot, IOrder, IPaymentType } from '../../types';
 import { Model } from '../base/Model';
 
 /**
@@ -22,7 +22,7 @@ class Order extends Model<IOrder> {
 		this.validateEmail();
 		this.validatePhone();
 
-		this.emitChanges('formErrors:changed', this._formErrors);
+		this.emitChanges(Events.VALIDATE_ORDER, this._formErrors);
 	}
 
 	/**
@@ -73,7 +73,7 @@ class Order extends Model<IOrder> {
 		} else {
 			this._formErrors.address = '';
 		}
-		this.emitChanges('formErrors:changed', this._formErrors);
+		this.emitChanges(Events.VALIDATE_ORDER, this._formErrors);
 	}
 
 	set email(value: string) {
@@ -95,7 +95,7 @@ class Order extends Model<IOrder> {
 		} else {
 			this._formErrors.email = '';
 		}
-		this.emitChanges('formErrors:changed', this._formErrors);
+		this.emitChanges(Events.VALIDATE_ORDER, this._formErrors);
 	}
 
 	set phone(value: string) {
@@ -117,7 +117,7 @@ class Order extends Model<IOrder> {
 		} else {
 			this._formErrors.phone = '';
 		}
-		this.emitChanges('formErrors:changed', this._formErrors);
+		this.emitChanges(Events.VALIDATE_ORDER, this._formErrors);
 	}
 
 	set items(value: ILot[]) {
@@ -133,7 +133,7 @@ class Order extends Model<IOrder> {
 	 */
 	postOrder(): void {
 		this.clearOrder();
-		this.emitChanges('order:post');
+		this.emitChanges(Events.PLACE_ORDER);
 	}
 }
 

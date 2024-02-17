@@ -1,4 +1,4 @@
-import { IPaymentType } from '../../types';
+import { Events, IPaymentType } from '../../types';
 import { ensureElement } from '../../utils/utils';
 import { IEvents } from '../base/events';
 import { Form } from './Form';
@@ -44,7 +44,7 @@ class DeliveryForm extends Form<IOrderDeliveryForm> {
 			const target = e.target as HTMLButtonElement;
 			// TODO: возможно тут стоит брать data-атрибут
 			this.setClassPaymentMethod(target.name);
-			events.emit('payment:changed', { target: target.name });
+			events.emit(Events.SELECT_PAYMENT, { target: target.name });
 		});
 	}
 

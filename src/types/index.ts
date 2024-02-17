@@ -14,12 +14,12 @@ enum Events {
 	OPEN_FIRST_ORDER_PART = 'order_payment:open', // начинаем оформление заказа
 	FINISH_FIRST_ORDER_PART = 'order:submit', // заполнили первую форму
 	OPEN_SECOND_ORDER_PART = 'order_contacts:open', // продолжаем оформление заказа
-	FINISH_SECOND_ORDER_PAH = 'contacts:submit', // заполнили первую форму
+	FINISH_SECOND_ORDER_PART = 'contacts:submit', // заполнили первую форму
 	PLACE_ORDER = 'order:post', // завершаем заказ
 	SELECT_PAYMENT = 'payment:changed', // выбираем способ оплаты
 	INPUT_ORDER_ADDRESS = 'order.address:change', // изменили адрес доставки
-	INPUT_ORDER_EMAIL = 'order.email:change', // изменили почту для связи
-	INPUT_ORDER_PHONE = 'order.phone:change', // изменили телефон для связи
+	INPUT_ORDER_EMAIL = 'contacts.email:change', // изменили почту для связи
+	INPUT_ORDER_PHONE = 'contacts.phone:change', // изменили телефон для связи
 	OPEN_MODAL = 'modal:open', // блокировка при открытии модального окна
 	CLOSE_MODAL = 'modal:close', // снятие блокировки при закрытии модального окна
 }

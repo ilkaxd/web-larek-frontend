@@ -1,3 +1,4 @@
+import { Events } from '../../types';
 import { createElement, ensureElement, formatSinaps } from '../../utils/utils';
 import { Component } from '../base/Component';
 import { EventEmitter } from '../base/events';
@@ -38,7 +39,7 @@ class Basket extends Component<IBasketView> {
 		// Прослушиваем событие запуска формы оформления заказа
 		if (this._button) {
 			this._button.addEventListener('click', () => {
-				events.emit('order_payment:open');
+				events.emit(Events.OPEN_FIRST_ORDER_PART);
 			});
 		}
 

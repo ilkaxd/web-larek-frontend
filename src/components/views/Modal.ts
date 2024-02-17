@@ -1,3 +1,4 @@
+import { Events } from '../../types';
 import { ensureElement } from '../../utils/utils';
 import { Component } from '../base/Component';
 import { IEvents } from '../base/events';
@@ -37,7 +38,7 @@ class Modal extends Component<IModalData> {
 		[this._closeButton, this.container].forEach((element) => {
 			element.addEventListener('click', () => {
 				this.close();
-				this.events.emit('modal:close');
+				this.events.emit(Events.CLOSE_MODAL);
 			});
 		});
 		this._content.addEventListener('click', (event) => event.stopPropagation());
@@ -52,7 +53,7 @@ class Modal extends Component<IModalData> {
 	 */
 	open(): void {
 		this.toggleClass(this.container, 'modal_active', true);
-		this.events.emit('modal:open');
+		this.events.emit(Events.OPEN_MODAL);
 	}
 
 	/**
@@ -61,7 +62,7 @@ class Modal extends Component<IModalData> {
 	close(): void {
 		this.toggleClass(this.container, 'modal_active', false);
 		this.content = null;
-		this.events.emit('modal:close');
+		this.events.emit(Events.CLOSE_MODAL);
 	}
 
 	render(data: IModalData): HTMLElement {

@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { IAppState, ILot, IOrder } from '../../types';
+import { Events, IAppState, ILot, IOrder } from '../../types';
 import { Model } from '../base/Model';
 import { IEvents } from '../base/events';
 import { LotItem } from './LotItem';
@@ -25,7 +25,7 @@ class AppState extends Model<IAppState> {
 
 	set catalog(items: ILot[]) {
 		this._catalog = items.map((item) => new LotItem(item, this.events));
-		this.emitChanges('catalog:changed', { catalog: this.catalog });
+		this.emitChanges(Events.LOAD_LOTS, { catalog: this.catalog });
 	}
 
 	get catalog(): ILot[] {

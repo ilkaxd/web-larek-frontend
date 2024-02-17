@@ -1,3 +1,4 @@
+import { Events } from '../../types';
 import { ensureElement, formatNumber } from '../../utils/utils';
 import { Component } from '../base/Component';
 import { IEvents } from '../base/events';
@@ -40,7 +41,7 @@ class Page extends Component<IPage> {
 
 		// Прослушиваем событие открытия корзины
 		this._basket.addEventListener('click', () => {
-			this.events.emit('basket:open');
+			this.events.emit(Events.OPEN_BASKET);
 		});
 	}
 
