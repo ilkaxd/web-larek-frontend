@@ -66,24 +66,14 @@ events.on<CatalogChangeEvent>('catalog:changed', () => {
 // Открыли корзину
 events.on('basket:open', () => {
 	modal.render({
-		content: basket.render({}),
+		content: basket.render({
+			valid: appData.getBasketLength() > 0
+		}),
 	});
 });
 
 // Открыли модалку карточки
 events.on('card:open', (item: ILot) => {
-	// актуализируем информацию по лоту
-	api
-		.getLotItem(item.id)
-		.then((res) => {
-			item.id = res.id;
-			item.description = res.description;
-			item.image = res.image;
-			item.title = res.title;
-			item.category = res.category;
-			item.price = res.price;
-		})
-		.catch((err) => console.log(err));
 	// Отображаем результат
 	const card = new Card('card', cloneTemplate(cardPreviewTemplate), events, {
 		onClick: () => {
@@ -116,6 +106,7 @@ events.on('lot:changed', () => {
 		const card = new BasketItem(cloneTemplate(cardBasketTemplate), events, {
 			onClick: (event) => {
 				item.removeFromBasket();  // TODO: может стоит вызывать event, а не метод
+				events.emit('basket:open');
 			},
 		});
 		return card.render({
@@ -131,6 +122,7 @@ events.on('lot:changed', () => {
 // Открываем первую форму
 events.on('order_payment:open', () => {
 	const order = appData.initOrder();
+	console.log(order.payment);
 	modal.render({
 		content: deliveryForm.render({
 			payment: order.payment,
@@ -214,8 +206,6 @@ events.on('contacts:submit', () => {
 			const success = new Success(cloneTemplate(successTemplate), events, {
 				onClick: () => {
 					modal.close();
-					appData.clearBasket();
-					events.emit('basket:changed');
 				},
 			});
 			modal.render({
@@ -223,6 +213,10 @@ events.on('contacts:submit', () => {
 					total: result.total,
 				}),
 			});
+
+			// Очищаем корзину сразу
+			appData.clearBasket();
+			events.emit('basket:changed');
 		})
 		.catch((err) => {
 			console.error(err);

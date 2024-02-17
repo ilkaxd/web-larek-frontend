@@ -10,6 +10,7 @@ import { EventEmitter } from '../base/events';
 interface IBasketView {
 	items: HTMLElement[];
 	total: number;
+	valid: boolean;
 }
 
 /**
@@ -59,6 +60,10 @@ class Basket extends Component<IBasketView> {
 
 	set total(total: number) {
 		this.setText(this._total, formatSinaps(total));
+	}
+
+	set valid(value: boolean){
+		this.setDisabled(this._button, !value);
 	}
 }
 

@@ -49,7 +49,7 @@ interface ILotItem {
 	description: string; // описание лота
 	image: string; // полный путь до файла картинки лота
 	category: ILotCategory; // категория лота
-	price: number; // цена лота
+	price: number | null; // цена лота
 }
 
 /**
@@ -69,12 +69,12 @@ interface ILarek {
  */
 type ILot = ILotItem & ILarek;
 
-// type IPaymentType = 'online' | 'offline' | ''; // вариант из postman
+// type IPaymentType = 'online' | 'offline'; // вариант из postman
 /**
  * Доступные категории платежей
  * TODO: лучше сделать аналогичные data-атрибуты в index.html, сейчас подгружается из классов
  */
-type IPaymentType = 'card' | 'cash' | ''; // лучше добавить атрибут в index.html
+type IPaymentType = 'card' | 'cash'; // лучше добавить атрибут в index.html
 
 /**
  * Полный интерфейс формы

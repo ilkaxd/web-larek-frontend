@@ -7,7 +7,6 @@ import { Order } from './Order';
 
 /**
  * Класс модели приложения
- * TODO: может стоит его сделать через Singleton
  */
 class AppState extends Model<IAppState> {
 	private _catalog: ILot[];

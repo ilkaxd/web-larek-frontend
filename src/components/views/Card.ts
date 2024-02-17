@@ -1,4 +1,5 @@
 import { ILotCategory } from '../../types';
+import { CATEGOTY_MAP } from '../../utils/constants';
 import { ensureElement, formatSinaps } from '../../utils/utils';
 import { Component } from '../base/Component';
 import { IEvents } from '../base/events';
@@ -36,14 +37,6 @@ class Card extends Component<ICard> {
 	private _button?: HTMLButtonElement;
 	private _price?: HTMLElement;
 
-	private _categoryMap: Record<ILotCategory, string> = {
-		'софт-скил': 'soft',
-		другое: 'other',
-		дополнительное: 'additional',
-		кнопка: 'button',
-		'хард-скил': 'hard',
-	};
-
 	/**
 	 * Базовый конструктор
 	 * @constructor
@@ -71,7 +64,7 @@ class Card extends Component<ICard> {
 			container
 		);
 		this._button = container.querySelector(`.${blockName}__button`);
-		this._description = container.querySelector(`.${blockName}__description`);
+		this._description = container.querySelector(`.${blockName}__text`);
 		this._price = container.querySelector(`.${blockName}__price`);
 
 		// Подвязываем события для внутренней кнопки или для все карточки
@@ -89,7 +82,7 @@ class Card extends Component<ICard> {
 
 		this._category.className = '';
 		const mainClass = `${this.blockName}__category`;
-		const additionalClass = this._categoryMap[value];
+		const additionalClass = CATEGOTY_MAP[value];
 		this._category.classList.add(mainClass, `${mainClass}_${additionalClass}`);
 	}
 
@@ -101,8 +94,14 @@ class Card extends Component<ICard> {
 		this.setImage(this._image, value, this.title);
 	}
 
+	set description(value: string) {
+		this.setText(this._description, value);
+	}
+
 	set price(value: number) {
 		this.setText(this._price, formatSinaps(value));
+		// TODO: стоит вынести в отдельное свойство
+		this.setDisabled(this._button, value == null);
 	}
 
 	set button(value: string) {

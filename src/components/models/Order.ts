@@ -5,7 +5,7 @@ import { Model } from '../base/Model';
  * Класс модели заказа
  */
 class Order extends Model<IOrder> {
-	protected _payment: IPaymentType = '';
+	protected _payment: IPaymentType = 'card';
 	protected _address: string = '';
 	protected _email: string = '';
 	protected _phone: string = '';
@@ -29,7 +29,7 @@ class Order extends Model<IOrder> {
 	 * Обнуляем поля заказа
 	 */
 	clearOrder(): void {
-		this._payment = '';
+		this._payment = 'card';
 		this._address = '';
 		this._email = '';
 		this._phone = '';

@@ -14,8 +14,8 @@ export function formatNumber(x: number, sep = ' ') {
 	return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, sep);
 }
 
-export function formatSinaps(x: number) {
-	return x ? `${formatNumber(x)} синапсов` : 'Бесценно';
+export function formatSinaps(x: number | null) {
+	return x === null ? 'Бесценно' : `${formatNumber(x)} синапсов`;
 }
 
 export type SelectorCollection<T> = string | NodeListOf<Element> | T[];

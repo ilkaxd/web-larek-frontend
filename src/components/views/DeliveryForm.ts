@@ -63,7 +63,11 @@ class DeliveryForm extends Form<IOrderDeliveryForm> {
 		});
 	}
 
-	set address(value: string) {
+	set payment(value: string){
+		this.setClassPaymentMethod(value);
+	}
+
+	set address(value: IPaymentType) {
 		(this.container.elements.namedItem('address') as HTMLInputElement).value =
 			value;
 	}
